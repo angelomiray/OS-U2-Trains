@@ -312,7 +312,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider">
+   <widget class="QSlider" name="horizontalSlider_T1">
     <property name="geometry">
      <rect>
       <x>960</x>
@@ -327,11 +327,14 @@
     <property name="maximum">
      <number>200</number>
     </property>
+    <property name="value">
+     <number>100</number>
+    </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider_2">
+   <widget class="QSlider" name="horizontalSlider_T2">
     <property name="geometry">
      <rect>
       <x>960</x>
@@ -353,7 +356,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider_3">
+   <widget class="QSlider" name="horizontalSlider_T3">
     <property name="geometry">
      <rect>
       <x>960</x>
@@ -367,6 +370,9 @@
     </property>
     <property name="maximum">
      <number>200</number>
+    </property>
+    <property name="value">
+     <number>100</number>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
@@ -388,7 +394,7 @@
      <string>T4</string>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider_4">
+   <widget class="QSlider" name="horizontalSlider_T4">
     <property name="geometry">
      <rect>
       <x>960</x>
@@ -402,6 +408,9 @@
     </property>
     <property name="maximum">
      <number>200</number>
+    </property>
+    <property name="value">
+     <number>100</number>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
@@ -423,7 +432,7 @@
      <string>T3</string>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider_5">
+   <widget class="QSlider" name="horizontalSlider_T5">
     <property name="geometry">
      <rect>
       <x>960</x>
@@ -437,6 +446,9 @@
     </property>
     <property name="maximum">
      <number>200</number>
+    </property>
+    <property name="value">
+     <number>100</number>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
@@ -557,13 +569,13 @@
    <zorder>label_trilho3_4</zorder>
    <zorder>label_trilho2_5</zorder>
    <zorder>label_trilho3_5</zorder>
-   <zorder>horizontalSlider</zorder>
-   <zorder>horizontalSlider_2</zorder>
-   <zorder>horizontalSlider_3</zorder>
+   <zorder>horizontalSlider_T1</zorder>
+   <zorder>horizontalSlider_T2</zorder>
+   <zorder>horizontalSlider_T3</zorder>
    <zorder>label_trem4_2</zorder>
-   <zorder>horizontalSlider_4</zorder>
+   <zorder>horizontalSlider_T4</zorder>
    <zorder>label_trem3_2</zorder>
-   <zorder>horizontalSlider_5</zorder>
+   <zorder>horizontalSlider_T5</zorder>
    <zorder>label_trem5_2</zorder>
    <zorder>label_trem1_2</zorder>
    <zorder>label_trem2_2</zorder>

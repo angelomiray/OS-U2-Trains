@@ -36,18 +36,23 @@ void MainWindow::updateInterface(int id, int x, int y){
     switch(id){
         case 1: //Atualiza a posição do objeto da tela (quadrado) que representa o trem1
             ui->label_trem1->setGeometry(x,y,21,17);
+            trem1->setVelocidade(ui->horizontalSlider_T1->value());
             break;
         case 2: //Atualiza a posição do objeto da tela (quadrado) que representa o trem2
             ui->label_trem2->setGeometry(x,y,21,17);
+            trem2->setVelocidade(ui->horizontalSlider_T2->value());
             break;
         case 3: //Atualiza a posição do objeto da tela (quadrado) que representa o trem3
             ui->label_trem3->setGeometry(x,y,21,17);
+            trem3->setVelocidade(ui->horizontalSlider_T3->value());
             break;
         case 4: //Atualiza a posição do objeto da tela (quadrado) que representa o trem4
             ui->label_trem4->setGeometry(x,y,21,17);
+            trem4->setVelocidade(ui->horizontalSlider_T4->value());
             break;
         case 5: //Atualiza a posição do objeto da tela (quadrado) que representa o trem5
             ui->label_trem5->setGeometry(x,y,21,17);
+            trem5->setVelocidade(ui->horizontalSlider_T5->value());
             break;
         default:
             break;

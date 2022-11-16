@@ -6,8 +6,12 @@ Trem::Trem(int ID, int x, int y){
     this->ID = ID;
     this->x = x;
     this->y = y;
-    velocidade = 50;
+    velocidade = 100;
 }
+
+void Trem::setVelocidade(int value) { //o programa utiliza o sleep para simular a velocidade. Logo, quanto maior o valor do slider
+    velocidade = 200 - value;                // mais lento ficará o trem. logo, modificamos o cálculo para que faça mais sentido aumentar
+}                                              //o slider e aumentar a velocidade
 
 //Função a ser executada após executar trem->START
 void Trem::run(){
