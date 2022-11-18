@@ -2,6 +2,7 @@
 #define TREM_H
 
 #include <QThread>
+#include <limits>
 
 /*
  * Classe Trem herda QThread
@@ -14,7 +15,11 @@ class Trem: public QThread {
      Q_OBJECT
     public:
         Trem(int,int,int);  //construtor
+
         void setVelocidade(int value);
+
+        void waits();        
+
         void run();         //função a ser executada pela thread
 
     //Cria um sinal
