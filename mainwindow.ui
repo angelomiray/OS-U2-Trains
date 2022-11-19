@@ -356,7 +356,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider_T3">
+   <widget class="QSlider" name="horizontalSlider_T4">
     <property name="geometry">
      <rect>
       <x>960</x>
@@ -394,7 +394,7 @@
      <string>T4</string>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider_T4">
+   <widget class="QSlider" name="horizontalSlider_T3">
     <property name="geometry">
      <rect>
       <x>960</x>
@@ -571,9 +571,9 @@
    <zorder>label_trilho3_5</zorder>
    <zorder>horizontalSlider_T1</zorder>
    <zorder>horizontalSlider_T2</zorder>
-   <zorder>horizontalSlider_T3</zorder>
-   <zorder>label_trem4_2</zorder>
    <zorder>horizontalSlider_T4</zorder>
+   <zorder>label_trem4_2</zorder>
+   <zorder>horizontalSlider_T3</zorder>
    <zorder>label_trem3_2</zorder>
    <zorder>horizontalSlider_T5</zorder>
    <zorder>label_trem5_2</zorder>
