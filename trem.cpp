@@ -37,10 +37,10 @@ void Trem::run(){
         switch (ID) {
             case 1:     //Trem 1
                 if (x == 60 && y > 30) {
-                    y == 34 ? y -=4 : y -= 10; //limite com base no tamanho do trem (quadrado) e o posicionamento inicial nos trilhos
-                } else if (y == 30 && x < 330) {
+                    y == 34 ? y -= 4 : y -= 10; //limite com base no tamanho do trem (quadrado) e o posicionamento inicial nos trilhos
+                } else if (y == 30 && x < 330) {                    
 
-                    if (x == 300) { // ESPERANDO T2 SAIR DA CS 00
+                    if (x >= 300 && x <= 310) { // ESPERANDO T2 SAIR DA CS 00
 
                         std::unique_lock<std::mutex> ul(mutexCS00);
 
@@ -51,24 +51,23 @@ void Trem::run(){
 
                     x += 10;
 
-                } else if (x == 330 && y < 150) {                    
+                } else if (x == 330 && y < 150) {
 
-                    if (y < 130) { //CRITICAL SECTION 00 (T1 VS T2)
-                        mutexCS00.lock();
-                            readyT1CS00 = false;
-                            y += 10;
-                            criticalSection.notify_all();
-                        mutexCS00.unlock();
-                    } else {
-                        y += 10;
-                    }
+                    y += 10;
 
-                    if (y == 130) { //waiting if T4 are in the CS02
+                    if (y >= 120 && y <= 130) { //T4 IN THE CS02?
                         std::unique_lock<std::mutex> ul(mutexCS02);
 
                         criticalSection.wait(ul, [] { return readyT4CS02; }); // until readyT4CS02 is true
 
                         ul.unlock();
+                    }
+
+                    if (y <= 130) { //CRITICAL SECTION 00 (T1 VS T2)
+                        mutexCS00.lock();
+                            readyT1CS00 = false;
+                            criticalSection.notify_all();
+                        mutexCS00.unlock();
                     }
 
                 } else {
@@ -79,15 +78,15 @@ void Trem::run(){
 
                     if (x >= 165) { // CRITICAL SECTION 02 (T1 vs T4)
                         mutexCS02.lock();
-                            readyT1CS02 = false;
-                            x -= 10;
+                            readyT1CS02 = false;                            
                             criticalSection.notify_all();
                         mutexCS02.unlock();
                     } else { // out of critical section
-                        x -= 10;
                         readyT1CS02 = true;
                         criticalSection.notify_all();
                     }
+
+                    x -= 10;
                 }
 
                 emit updateGUI(ID, x, y);    //Emite um sinal
@@ -97,13 +96,12 @@ void Trem::run(){
 
                     x == 595 ? x += 5 : x += 10; //limite com base no tamanho do trem (quadrado) e o posicionamento inicial nos trilhos
 
-                    if (x == 370 || x == 375) { //T2 FORA DA CS 00
+                    if (x == 350) { //T2 FORA DA CS 00
                         readyT2CS00 = true;
                         criticalSection.notify_all();
                     }
 
-                }
-                else if (x == 600 && y < 150) {
+                } else if (x == 600 && y < 150) {
                     y += 10;
                 } else if (y == 150 && x > 330) {
 
@@ -115,12 +113,11 @@ void Trem::run(){
                         ul.unlock();
                     }
 
-                    if (x > 360 && x <= 470) { //CRITICAL SECTION 03 ( T2 VS T4 )
+                    if (x >= 360 && x <= 470) { //CRITICAL SECTION 03 ( T2 VS T4 )
                         mutexCS03.lock();
-                            readyT2CS03 = false;
-                            x -= 10;
+                            readyT2CS03 = false;                            
                             criticalSection.notify_all();
-                        mutexCS00.unlock();
+                        mutexCS03.unlock();
                     }
 
                     if (x == 360) { //ESPERA T1 SAIR DA CS00
@@ -129,11 +126,16 @@ void Trem::run(){
                         criticalSection.wait(ul, [] { return readyT1CS00; });
 
                         ul.unlock();
-                    } else {
-                        x -= 10;
                     }
 
+                    x -= 10;
+
                 } else { // CRITICAL SECTION 00 ( T1 VS T2 )
+                    if (y == 130) { // SAIU DA CS03
+                        readyT2CS03 = true;
+                        criticalSection.notify_all();
+                    }
+
                     mutexCS00.lock();
                         readyT2CS00 = false;
                         y -= 10;
@@ -156,12 +158,6 @@ void Trem::run(){
             case 4: //Trem 4
                 if (x == 195 && y > 150) {
 
-                    if (y == 176 || y == 177 || y == 170) {
-                        std::unique_lock<std::mutex> ul(mutexCS02);
-                        criticalSection.wait(ul, [] { return readyT1CS02; });
-                        ul.unlock();
-                    }
-
                     if (y == 156) {
                         y -= 6;
                     } else if (y == 157) {
@@ -169,8 +165,14 @@ void Trem::run(){
                     } else {
                         y -= 10;
                     }
-                }
-                else if (y == 150 && x < 465) {                    
+
+                    if (y <= 170 && y >= 150) {
+                        std::unique_lock<std::mutex> ul(mutexCS02);
+                        criticalSection.wait(ul, [] { return readyT1CS02; });
+                        ul.unlock();
+                    }
+
+                } else if (y == 150 && x < 465) {
 
                     if (x <= 351) { //CRITICAL SECTION 02 (T1 vs T4)
                         mutexCS02.lock();
@@ -182,7 +184,7 @@ void Trem::run(){
                         criticalSection.notify_all();
                     }
 
-                    if (x == 300) {
+                    if (x == 305) {
                         std::unique_lock<std::mutex> ul(mutexCS03);
 
                         criticalSection.wait(ul, [] { return readyT2CS03; });
@@ -190,20 +192,21 @@ void Trem::run(){
                         ul.unlock();
                     }
 
-                    if (x > 360 && x <= 470) { //CRITICAL SECTION 03 (T2 VS T4)
+                    if (x >= 315 && x <= 465) { //CRITICAL SECTION 03 (T2 VS T4)
                        mutexCS03.lock();
                            readyT4CS03 = false;
                            criticalSection.notify_all();
                        mutexCS03.unlock();
-                   } else {
-                        readyT4CS03 = true; //terminou de utilizar
-                        criticalSection.notify_all();
-                    }
+                   }
 
                    x += 10;
 
 
                 } else if (x == 465 && y < 287) {
+                    if (y == 160) {
+                        readyT4CS03 = true; // terminou de utilizar a CS03
+                        criticalSection.notify_all();
+                    }
                     y == 280 ? y += 7 : y += 10;                
                 } else {
                     x -= 10;
