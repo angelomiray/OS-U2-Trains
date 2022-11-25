@@ -8,8 +8,8 @@ bool readyT1CS00 = true;
 bool readyT2CS00 = true;
 
 std::mutex mutexCS01;
-//bool readyT1CS02 = true;
-//bool readyT4CS02 = true;
+bool readyT2CS01 = true;
+bool readyT3CS01 = true;
 
 std::mutex mutexCS02;
 bool readyT1CS02 = true;
@@ -28,8 +28,8 @@ bool readyT3CS05 = true;
 bool readyT5CS05 = true;
 
 std::mutex mutexCS06;
-//bool readyT4CS06 = true;
-//bool readyT5CS06 = true;
+bool readyT4CS06 = true;
+bool readyT5CS06 = true;
 
 //Construtor
 Trem::Trem(int ID, int x, int y){
@@ -129,18 +129,38 @@ void Trem::run(){
                 emit updateGUI(ID, x, y);    //Emite um sinal
                 break;
             case 2: //Trem 2
-                if (y == 30 && x < 600) {
-
-                    x == 595 ? x += 5 : x += 10; //limite com base no tamanho do trem (quadrado) e o posicionamento inicial nos trilhos
+                if (y == 30 && x < 600) {                    
 
                     if (x == 350) { //T2 FORA DA CS 00
                         readyT2CS00 = true;
                         criticalSection.notify_all();
                     }
 
-                } else if (x == 600 && y < 150) {
+                    if (x == 570 || x == 575) { //ESPERA T3 SAIR DO CS01
+                        std::unique_lock<std::mutex> ul(mutexCS01);
 
-                    y += 10;
+                        criticalSection.wait(ul, [] { return readyT3CS01; });
+
+                        ul.unlock();
+                    } else if (x > 575 && x <= 595) { //ENTROU CS01
+                        mutexCS01.lock();
+                            readyT2CS01 = false;
+                            criticalSection.notify_all();
+                        mutexCS01.unlock();
+                    }
+
+                    x == 595 ? x += 5 : x += 10; //limite com base no tamanho do trem (quadrado) e o posicionamento inicial nos trilhos
+
+
+
+                } else if (x == 600 && y < 150) {                    
+
+                    if (y <= 150) { //ESTÁ NA CS01
+                        mutexCS01.lock();
+                            readyT2CS01 = false;
+                            criticalSection.notify_all();
+                        mutexCS01.unlock();
+                    }
 
                     if (y == 130) {
                         std::unique_lock<std::mutex> ul(mutexCS04);
@@ -148,15 +168,25 @@ void Trem::run(){
                         criticalSection.wait(ul, [] { return readyT5CS04; });
 
                         ul.unlock();
-                    } else if (y > 130 && y <= 150) { //ao entrar na CS04
+                    } else if (y > 130 && y <= 140) { //ao entrar na CS04
                         mutexCS04.lock();
                             readyT2CS04 = false;
                             criticalSection.notify_all();
                         mutexCS04.unlock();
                     }
 
+                    y += 10;
+
 
                 } else if (y == 150 && x > 330) {
+
+                    if (x == 570) { // FIM DA CS01
+                        mutexCS01.lock();
+                            readyT2CS01 = true;
+                            criticalSection.notify_all();
+                        mutexCS01.unlock();
+                    }
+
                     x -= 10;
 
                     if (x >= 440) { // CS04
@@ -216,7 +246,7 @@ void Trem::run(){
             case 3: //Trem 3
                 if (x == 870 && y < 150) {
                     y == 144 ? y += 6 : y += 10;                
-                } else if (y == 150 && x > 600) {                    
+                } else if (y == 150 && x > 600) {                                                           
 
                     if (x == 760) {
                         std::unique_lock<std::mutex> ul(mutexCS05);
@@ -231,10 +261,22 @@ void Trem::run(){
                         mutexCS05.unlock();
                     }
 
+                    if (x == 630) { //ESPERA T2 SAIR DO CS01
+                        std::unique_lock<std::mutex> ul(mutexCS01);
+
+                        criticalSection.wait(ul, [] { return readyT2CS01; });
+
+                        ul.unlock();
+                    } else if (x < 630 && x >= 600) {
+                        mutexCS01.lock();
+                            readyT3CS01 = false;
+                            criticalSection.notify_all();
+                        mutexCS01.unlock();
+                    }
+
                     x -= 10;
 
-                } else if (x == 600 && y > 30) {
-
+                } else if (x == 600 && y > 30) {                
                     if (y >= 130) {
                         mutexCS05.lock();
                             readyT3CS05 = false;
@@ -249,8 +291,27 @@ void Trem::run(){
 
                     y -= 10;
 
-                } else {
+                    if (y >= 30) { //T3 CS01
+                        mutexCS01.lock();
+                            readyT3CS01 = false;
+                            criticalSection.notify_all();
+                        mutexCS01.unlock();
+                    }
+
+                } else {                    
+
+                    if (x > 620) {
+                        readyT3CS01 = true;
+                        criticalSection.notify_all();
+                    } else {
+                        mutexCS01.lock();
+                            readyT3CS01 = false;
+                            criticalSection.notify_all();
+                        mutexCS01.unlock();
+                    }
+
                     x += 10;
+
                 }
                 emit updateGUI(ID, x, y);    //Emite um sinal
                 break;
@@ -301,6 +362,8 @@ void Trem::run(){
                            criticalSection.notify_all();
                        mutexCS03.unlock();
                    }                 
+
+
 
                 } else if (x == 465 && y < 287) {
                     if (y >= 150 && y < 167) {
